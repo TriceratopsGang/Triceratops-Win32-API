@@ -1,22 +1,37 @@
 #include <windows.h>
-#include "MyWindow.h"
 
-int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine, int nCmdShow)
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam);
+
+int WINAPI WinMain(_In_ HINSTANCE hInstance, _In_opt_ HINSTANCE hPrevInstance,
+    _In_ LPSTR lpCmdLine, _In_ int nCmdShow)
 {
-    // Create an instance of MainWindow
-    MyWindow window;
+    const wchar_t CLASS_NAME[] = L"Simple Window Class";
 
-    // Attempt to create the window
-    if (!window.Create(L"Learn to Program Windows", WS_OVERLAPPEDWINDOW))
+    WNDCLASS wc = {};
+    wc.lpfnWndProc = WindowProc;
+    wc.hInstance = hInstance;
+    wc.lpszClassName = CLASS_NAME;
+
+    RegisterClass(&wc);
+
+    HWND hwnd = CreateWindowEx(
+        0,
+        CLASS_NAME,
+        L"Simple Win32 Window",
+        WS_OVERLAPPEDWINDOW,
+        CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT, CW_USEDEFAULT,
+        NULL,
+        NULL,
+        hInstance,
+        NULL);
+
+    if (hwnd == NULL)
     {
-        MessageBox(NULL, L"Failed to create window", L"Error", MB_OK | MB_ICONERROR);
         return 0;
     }
 
-    // Show the window
-    ShowWindow(window.Window(), nCmdShow);
+    ShowWindow(hwnd, nCmdShow);
 
-    // Run the message loop
     MSG msg = {};
     while (GetMessage(&msg, NULL, 0, 0))
     {
@@ -24,5 +39,27 @@ int WINAPI wWinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance, PWSTR pCmdLine
         DispatchMessage(&msg);
     }
 
-    return (int)msg.wParam;
+    return 0;
+}
+
+LRESULT CALLBACK WindowProc(HWND hwnd, UINT uMsg, WPARAM wParam, LPARAM lParam)
+{
+    switch (uMsg)
+    {
+    case WM_DESTROY:
+        PostQuitMessage(0);
+        return 0;
+
+    case WM_PAINT:
+    {
+        PAINTSTRUCT ps;
+        HDC hdc = BeginPaint(hwnd, &ps);
+        FillRect(hdc, &ps.rcPaint, (HBRUSH)(COLOR_WINDOW + 1));
+        EndPaint(hwnd, &ps);
+        return 0;
+    }
+
+    default:
+        return DefWindowProc(hwnd, uMsg, wParam, lParam);
+    }
 }

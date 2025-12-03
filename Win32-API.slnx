@@ -3,5 +3,5 @@
     <Platform Name="x64" />
     <Platform Name="x86" />
   </Configurations>
-  <Project Path="SimpleWindow/SimpleWindow.vcxproj" />
+  <Project Path="SimpleWindow/SimpleWindow.vcxproj" Id="67b6e33b-718c-4358-b318-804d14b525ee" />
 </Solution>
